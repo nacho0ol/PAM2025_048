@@ -11,4 +11,5 @@ class ScentraApp : Application() {
         super.onCreate()
         container = ScentraContainer()
     }
+
 }
