@@ -36,3 +36,11 @@ data class CreateProdukRequest(
     @SerialName("current_stock") val currentStock: Int,
     @SerialName("img_path") val imgPath: String = "default.jpg"
 )
+
+@Serializable
+data class StokRequest(
+    @SerialName("product_id") val productId: Int,
+    @SerialName("user_id") val userId: Int,
+    val qty: Int,
+    val reason: String? = null
+)

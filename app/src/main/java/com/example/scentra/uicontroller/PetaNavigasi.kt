@@ -7,8 +7,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.scentra.ui.view.product.HalamanDetailProduct
+import com.example.scentra.ui.view.product.HalamanHistory
 import com.example.scentra.uicontroller.route.DestinasiDashboard
 import com.example.scentra.uicontroller.route.DestinasiDetail
+import com.example.scentra.uicontroller.route.DestinasiDetailUser
 import com.example.scentra.uicontroller.route.DestinasiEntryProduct
 import com.example.scentra.uicontroller.route.DestinasiHistory
 import com.example.scentra.uicontroller.route.DestinasiLanding
@@ -17,10 +20,9 @@ import com.example.scentra.uicontroller.route.DestinasiProfile
 import com.example.scentra.uicontroller.route.DestinasiRegister
 import com.example.scentra.uicontroller.route.DestinasiUpdate
 import com.example.scentra.uicontroller.view.HalamanDashboard
-import com.example.scentra.uicontroller.view.HalamanDetailProduct
+import com.example.scentra.uicontroller.view.HalamanDetailUser
 import com.example.scentra.uicontroller.view.HalamanEditProduct
 import com.example.scentra.uicontroller.view.HalamanEntryProduct
-import com.example.scentra.uicontroller.view.HalamanHistory
 import com.example.scentra.uicontroller.view.HalamanLanding
 import com.example.scentra.uicontroller.view.HalamanLogin
 import com.example.scentra.uicontroller.view.HalamanProfile
@@ -62,7 +64,6 @@ fun ScentraNavHost(
             arguments = listOf(navArgument("role") { type = NavType.StringType })
         ) { backStackEntry ->
             val role = backStackEntry.arguments?.getString("role") ?: "Staff"
-
             HalamanDashboard(
                 role = role,
                 onNavigateToProfile = {
@@ -71,11 +72,9 @@ fun ScentraNavHost(
                 onNavigateToHistory = {
                     navController.navigate(DestinasiHistory.route) { launchSingleTop = true }
                 },
-                // FAB (Tambah Produk Baru) -> Entry
                 onAddProductClick = {
                     navController.navigate(DestinasiEntryProduct.route)
                 },
-                // Card (Lihat Detail) -> Detail
                 onProductClick = { idProduk ->
                     navController.navigate("${DestinasiDetail.route}/$idProduk")
                 }
@@ -84,9 +83,7 @@ fun ScentraNavHost(
 
         composable(DestinasiRegister.route) {
             HalamanRegister(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
@@ -97,7 +94,6 @@ fun ScentraNavHost(
             val role = backStackEntry.arguments?.getString("role") ?: "Staff"
 
             HalamanProfile(
-                role = role,
                 onLogoutClick = {
                     navController.navigate(DestinasiLogin.route) { popUpTo(0) }
                 },
@@ -110,27 +106,22 @@ fun ScentraNavHost(
                         "history" -> navController.navigate(DestinasiHistory.route) { launchSingleTop = true }
                         "profile" -> { }
                     }
+                },
+                onUserClick = { idUser ->
+                    navController.navigate("${DestinasiDetailUser.route}/$idUser")
                 }
             )
         }
 
         composable(DestinasiHistory.route) {
             HalamanHistory(
-                onNavigate = { route ->
-                    when (route) {
-                        "dashboard" -> navController.navigate("${DestinasiDashboard.route}/Admin") { launchSingleTop = true }
-                        "profile" -> navController.navigate("${DestinasiProfile.route}/Admin") { launchSingleTop = true }
-                        "history" -> { }
-                    }
-                }
+                navigateBack = { navController.popBackStack() }
             )
         }
 
         composable(DestinasiEntryProduct.route) {
             HalamanEntryProduct(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
@@ -145,7 +136,6 @@ fun ScentraNavHost(
                 HalamanDetailProduct(
                     idProduk = idProduk,
                     navigateBack = { navController.popBackStack() },
-                    // 👇 Callback Edit sementara
                     onEditClick = { id ->
                         navController.navigate("${DestinasiUpdate.route}/$id")
                     }
@@ -163,9 +153,20 @@ fun ScentraNavHost(
             if (idProduk != null) {
                 HalamanEditProduct(
                     idProduk = idProduk,
-                    onNavigateBack = {
-                        navController.popBackStack()
-                    }
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(
+            route = DestinasiDetailUser.routeWithArgs,
+            arguments = listOf(navArgument(DestinasiDetailUser.idUser) { type = NavType.IntType })
+        ) { backStackEntry ->
+            val idUser = backStackEntry.arguments?.getInt(DestinasiDetailUser.idUser)
+            if (idUser != null) {
+                HalamanDetailUser(
+                    idUser = idUser,
+                    navigateBack = { navController.popBackStack() }
                 )
             }
         }

@@ -3,11 +3,15 @@ package com.example.scentra.apiservice
 import com.example.scentra.modeldata.AddProdukResponse
 import com.example.scentra.modeldata.BaseResponse
 import com.example.scentra.modeldata.CreateProdukRequest
+import com.example.scentra.modeldata.HistoryResponse
 import com.example.scentra.modeldata.LoginRequest
 import com.example.scentra.modeldata.LoginResponse
 import com.example.scentra.modeldata.ProdukDetailResponse
 import com.example.scentra.modeldata.ProdukResponse
 import com.example.scentra.modeldata.RegisterRequest
+import com.example.scentra.modeldata.StokRequest
+import com.example.scentra.modeldata.UserData
+import com.example.scentra.modeldata.UserResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -39,4 +43,30 @@ interface ScentraApiService {
         @Path("id") id: Int,
         @Body produk: CreateProdukRequest
     ): retrofit2.Response<Unit>
+
+    @POST("api/products/restock")
+    suspend fun restockProduct(@Body request: StokRequest): retrofit2.Response<Unit>
+
+    @POST("api/products/stock-out")
+    suspend fun stockOutProduct(@Body request: StokRequest): retrofit2.Response<Unit>
+
+    @GET("api/products/history")
+    suspend fun getHistoryLog(): HistoryResponse
+
+    @GET("api/auth/users")
+    suspend fun getAllUsers(): UserResponse
+
+    @GET("api/auth/users/{id}")
+    suspend fun getUserById(@Path("id") id: Int): LoginResponse
+
+    // Update
+    @PUT("api/auth/users/{id}")
+    suspend fun updateUser(
+        @Path("id") id: Int,
+        @Body user: UserData
+    ): BaseResponse
+
+    // Delete
+    @DELETE("api/auth/users/{id}")
+    suspend fun deleteUser(@Path("id") id: Int): BaseResponse
 }

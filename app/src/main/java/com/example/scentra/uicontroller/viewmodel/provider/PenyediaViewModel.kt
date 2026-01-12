@@ -5,10 +5,13 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.scentra.ScentraApp
+import com.example.scentra.uicontroller.viewmodel.DetailViewModel
 import com.example.scentra.uicontroller.viewmodel.EntryViewModel
+import com.example.scentra.uicontroller.viewmodel.HistoryViewModel
 import com.example.scentra.uicontroller.viewmodel.LoginViewModel
+import com.example.scentra.uicontroller.viewmodel.ProfileViewModel
+import com.example.scentra.uicontroller.viewmodel.UserDetailViewModel
 import com.example.scentra.viewmodel.DashboardViewModel
-import com.example.scentra.viewmodel.DetailViewModel
 import com.example.scentra.viewmodel.EditViewModel
 
 object PenyediaViewModel {
@@ -39,6 +42,18 @@ object PenyediaViewModel {
 
         initializer {
             EditViewModel(scentraApplication().container.scentraRepository)
+        }
+
+        initializer {
+            HistoryViewModel(scentraApplication().container.scentraRepository)
+        }
+
+        initializer {
+            ProfileViewModel(scentraApplication().container.scentraRepository)
+        }
+
+        initializer {
+            UserDetailViewModel(scentraApplication().container.scentraRepository)
         }
 
     }

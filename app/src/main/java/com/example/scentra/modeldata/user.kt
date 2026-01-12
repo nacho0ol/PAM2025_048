@@ -1,5 +1,6 @@
 package com.example.scentra.modeldata
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -31,9 +32,17 @@ data class BaseResponse(
     val message: String
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class UserData(
-    val user_id: Int,
+    @SerialName("user_id") val id: Int,
+    @SerialName("username") val username: String,
     val firstname: String,
+    val lastname: String? = null,
     val role: String
+)
+@Serializable
+data class UserResponse(
+    val success: Boolean,
+    val message: String,
+    val data: List<UserData>
 )

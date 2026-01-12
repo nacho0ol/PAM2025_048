@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.scentra.modeldata.CurrentUser
 import com.example.scentra.modeldata.UserData
 import com.example.scentra.repositori.ScentraRepository
 import kotlinx.coroutines.launch
@@ -26,10 +27,14 @@ class LoginViewModel(private val repository: ScentraRepository) : ViewModel() {
 
     fun onLoginClick() {
         viewModelScope.launch {
-            loginState = LoginUiState.Loading
+            loginState = LoginUiState. Loading
             try {
                 val response = repository.login(username, password)
                 if (response.success && response.data != null) {
+
+                    CurrentUser.id = response.data.id
+                    CurrentUser.username = response.data.username
+                    CurrentUser.role = response.data.role
                     loginState = LoginUiState.Success(response.data)
                 } else {
                     loginState = LoginUiState.Error(response.message)
