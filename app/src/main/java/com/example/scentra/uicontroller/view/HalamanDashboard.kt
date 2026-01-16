@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scentra.uicontroller.view.widget.ProdukCard
@@ -32,6 +33,7 @@ fun HalamanDashboard(
     val uiState = viewModel.uiState
 
     Scaffold(
+        containerColor = Color(0xFFFFFCF5),
         topBar = {
             ScentraTopAppBar(
                 title = "Scentra",
@@ -51,14 +53,22 @@ fun HalamanDashboard(
         },
         floatingActionButton = {
             if (role == "Admin") {
-                FloatingActionButton(onClick = onAddProductClick) {
+                FloatingActionButton(
+                    onClick = onAddProductClick,
+                    containerColor = Color(0xFF1D1B20),
+                    contentColor = Color.White,
+                    modifier = Modifier
+                ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Tambah")
                 }
             }
         }
     ) { innerPadding ->
 
-        Box(modifier = modifier.padding(innerPadding).fillMaxSize()) {
+
+        Box(
+            modifier = modifier.fillMaxSize()
+        ) {
 
             when (uiState) {
                 is DashboardUiState.Loading -> {
@@ -73,11 +83,21 @@ fun HalamanDashboard(
                         )
                     } else {
                         LazyColumn(
-                            contentPadding = PaddingValues(16.dp),
+                            contentPadding = PaddingValues(top = innerPadding.calculateTopPadding() + 16.dp,
+
+                                // 2. Kiri Kanan standar
+                                start = 16.dp,
+                                end = 16.dp,
+
+                                // 3. Bawah standar aja (karena FAB udah diamankan sama Spacer raksasa)
+                                bottom = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(uiState.produk) { produk ->
                                 ProdukCard(produk = produk, onClick = { onProductClick(produk.id) })
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(150.dp))
                             }
                         }
                     }

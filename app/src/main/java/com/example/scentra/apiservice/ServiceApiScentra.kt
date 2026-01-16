@@ -2,6 +2,7 @@ package com.example.scentra.apiservice
 
 import com.example.scentra.modeldata.AddProdukResponse
 import com.example.scentra.modeldata.BaseResponse
+import com.example.scentra.modeldata.BasicResponse
 import com.example.scentra.modeldata.CreateProdukRequest
 import com.example.scentra.modeldata.HistoryResponse
 import com.example.scentra.modeldata.LoginRequest
@@ -12,11 +13,16 @@ import com.example.scentra.modeldata.RegisterRequest
 import com.example.scentra.modeldata.StokRequest
 import com.example.scentra.modeldata.UserData
 import com.example.scentra.modeldata.UserResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ScentraApiService {
@@ -29,8 +35,20 @@ interface ScentraApiService {
     @GET("api/products")
     suspend fun getProducts(): ProdukResponse
 
+    @Multipart
     @POST("api/products")
-    suspend fun insertProduk(@Body produk: CreateProdukRequest): AddProdukResponse
+    suspend fun insertProduk(
+        @Part("product_name") nama: RequestBody,
+        @Part("variant") variant: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("current_stock") stok: RequestBody,
+        @Part("top_notes") top: RequestBody,
+        @Part("middle_notes") middle: RequestBody,
+        @Part("base_notes") base: RequestBody,
+        @Part("description") desc: RequestBody,
+
+        @Part image: MultipartBody.Part?
+    ): Response<BasicResponse>
 
     @GET("api/products/{id}")
     suspend fun getProductById(@Path("id") id: Int): ProdukDetailResponse
@@ -38,11 +56,23 @@ interface ScentraApiService {
     @DELETE("api/products/{id}")
     suspend fun deleteProduct(@Path("id") id: Int): retrofit2.Response<Unit>
 
+    @Multipart
     @PUT("api/products/{id}")
-    suspend fun updateProduct(
+    suspend fun updateProduk(
         @Path("id") id: Int,
-        @Body produk: CreateProdukRequest
-    ): retrofit2.Response<Unit>
+        @Part("product_name") nama: RequestBody,
+        @Part("variant") variant: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("current_stock") stok: RequestBody,
+        @Part("top_notes") top: RequestBody,
+        @Part("middle_notes") middle: RequestBody,
+        @Part("base_notes") base: RequestBody,
+        @Part("description") desc: RequestBody,
+        // 👇 Kita kirim nama file lama sebagai teks backup
+        @Part("img_path") oldImgPath: RequestBody,
+        // 👇 File baru (Boleh Null)
+        @Part image: MultipartBody.Part?
+    ): Response<BasicResponse>
 
     @POST("api/products/restock")
     suspend fun restockProduct(@Body request: StokRequest): retrofit2.Response<Unit>

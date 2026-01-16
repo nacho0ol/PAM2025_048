@@ -44,3 +44,8 @@ data class StokRequest(
     val qty: Int,
     val reason: String? = null
 )
+
+fun getFullImageUrl(relativePath: String): String {
+    val baseUrl = "http://10.0.2.2:3000/uploads/" // Sesuaikan port kamu
+    return if (relativePath.startsWith("http")) relativePath else "$baseUrl$relativePath"
+}

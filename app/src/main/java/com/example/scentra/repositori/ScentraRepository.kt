@@ -13,6 +13,8 @@ import com.example.scentra.modeldata.ProdukResponse
 import com.example.scentra.modeldata.RegisterRequest
 import com.example.scentra.modeldata.StokRequest
 import com.example.scentra.modeldata.UserData
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 interface ScentraRepository {
 
@@ -21,14 +23,35 @@ interface ScentraRepository {
 
     suspend fun getProducts(): ProdukResponse
 
-    suspend fun insertProduk(produk: CreateProdukRequest): AddProdukResponse
+    suspend fun insertProduk(
+        nama: RequestBody,
+        variant: RequestBody,
+        price: RequestBody,
+        stok: RequestBody,
+        top: RequestBody,
+        middle: RequestBody,
+        base: RequestBody,
+        desc: RequestBody,
+        image: MultipartBody.Part?
+    )
 
     suspend fun getProductById(id: Int): Produk
 
     suspend fun deleteProduct(id: Int)
 
-    suspend fun updateProduct(id: Int, produk: CreateProdukRequest)
-
+    suspend fun updateProduct(
+        id: Int,
+        nama: RequestBody,
+        variant: RequestBody,
+        price: RequestBody,
+        stok: RequestBody,
+        top: RequestBody,
+        middle: RequestBody,
+        base: RequestBody,
+        desc: RequestBody,
+        oldImgPath: RequestBody, // Tambahan
+        image: MultipartBody.Part?
+    )
     suspend fun restockProduct(productId: Int, qty: Int)
 
     suspend fun stockOutProduct(productId: Int, qty: Int, reason: String)
@@ -56,8 +79,21 @@ class NetworkScentraRepository(
     override suspend fun getProducts(): ProdukResponse {
         return apiService.getProducts()
     }
-    override suspend fun insertProduk(produk: CreateProdukRequest): AddProdukResponse {
-        return apiService.insertProduk(produk)
+
+    override suspend fun insertProduk(
+        nama: RequestBody,
+        variant: RequestBody,
+        price: RequestBody,
+        stok: RequestBody,
+        top: RequestBody,
+        middle: RequestBody,
+        base: RequestBody,
+        desc: RequestBody,
+        image: MultipartBody.Part?
+    ) {
+        apiService.insertProduk(
+            nama, variant, price, stok, top, middle, base, desc, image
+        )
     }
 
     override suspend fun getProductById(id: Int): Produk {
@@ -76,21 +112,26 @@ class NetworkScentraRepository(
         }
     }
 
-    override suspend fun updateProduct(id: Int, produk: CreateProdukRequest) {
-        try {
-            val response = apiService.updateProduct(id, produk)
-            if (!response.isSuccessful) {
-                throw Exception("Gagal update produk: ${response.code()}")
-            }
-        } catch (e: Exception) {
-            throw e
-        }
+    override suspend fun updateProduct(
+        id: Int,
+        nama: RequestBody,
+        variant: RequestBody,
+        price: RequestBody,
+        stok: RequestBody,
+        top: RequestBody,
+        middle: RequestBody,
+        base: RequestBody,
+        desc: RequestBody,
+        oldImgPath: RequestBody,
+        image: MultipartBody.Part?
+    ) {
+        apiService.updateProduk(id, nama, variant, price, stok, top, middle, base, desc, oldImgPath, image)
     }
 
     override suspend fun restockProduct(productId: Int, qty: Int) {
         val userIdYangLogin = CurrentUser.id
-        val finalId = if (userIdYangLogin == 0) 1 else userIdYangLogin
-        val request = StokRequest(productId = productId, userId = 1, qty = qty)
+        val finalId = if (userIdYangLogin != 0) userIdYangLogin else 1
+        val request = StokRequest(productId = productId, userId = finalId, qty = qty)
 
         val response = apiService.restockProduct(request)
         if (!response.isSuccessful) throw Exception("Gagal Restock: ${response.code()}")
@@ -98,8 +139,8 @@ class NetworkScentraRepository(
 
     override suspend fun stockOutProduct(productId: Int, qty: Int, reason: String) {
         val userIdYangLogin = CurrentUser.id
-        val finalId = if (userIdYangLogin == 0) 1 else userIdYangLogin
-        val request = StokRequest(productId = productId, userId = 1, qty = qty, reason = reason)
+        val finalId = if (userIdYangLogin != 0) userIdYangLogin else 1
+        val request = StokRequest(productId = productId, userId = finalId, qty = qty, reason = reason)
         val response = apiService.stockOutProduct(request)
         if (!response.isSuccessful) throw Exception("Gagal Stock Out: ${response.code()}")
     }

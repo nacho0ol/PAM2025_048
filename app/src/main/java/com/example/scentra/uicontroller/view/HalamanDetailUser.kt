@@ -56,6 +56,8 @@ import com.example.scentra.modeldata.UserData
 import com.example.scentra.uicontroller.viewmodel.UserDetailUiState
 import com.example.scentra.uicontroller.viewmodel.UserDetailViewModel
 import com.example.scentra.uicontroller.viewmodel.provider.PenyediaViewModel
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,6 +138,8 @@ fun HalamanDetailUser(
                             InfoRow(label = "Role", value = user.role)
                             Divider(Modifier.padding(vertical = 8.dp))
                             InfoRow(label = "User ID", value = "#${user.id}")
+                            Divider(Modifier.padding(vertical = 8.dp))
+                            PasswordRow(password = user.password ?: "Tidak ada password")
                         }
                     }
                 }
@@ -218,4 +222,32 @@ fun EditUserDialog(
             TextButton(onClick = onDismiss) { Text("Batal") }
         }
     )
+}
+
+@Composable
+fun PasswordRow(password: String) {
+    var isVisible by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("Password", fontWeight = FontWeight.SemiBold)
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = if (isVisible) password else "•".repeat(password.length),
+                fontWeight = FontWeight.Bold,
+                color = if (isVisible) Color.Black else Color.Gray
+            )
+
+            IconButton(onClick = { isVisible = !isVisible }) {
+                Icon(
+                    imageVector = if (isVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                    contentDescription = "Toggle Password"
+                )
+            }
+        }
+    }
 }

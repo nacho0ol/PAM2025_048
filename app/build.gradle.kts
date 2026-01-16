@@ -64,6 +64,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     implementation("androidx.compose.foundation:foundation:1.6.0")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,7 +28,6 @@ import coil.compose.AsyncImage
 import com.example.scentra.uicontroller.view.widget.ScentraTopAppBar
 import com.example.scentra.uicontroller.viewmodel.EntryViewModel
 import com.example.scentra.uicontroller.viewmodel.provider.PenyediaViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +37,7 @@ fun HalamanEntryProduct(
     viewModel: EntryViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val uiState = viewModel.uiState
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -65,11 +66,13 @@ fun HalamanEntryProduct(
         ) {
             if (uiState.error != null) {
                 item {
-                    Text(
-                        text = uiState.error!!,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
+                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                        Text(
+                            text = uiState.error!!,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
                 }
             }
 
@@ -112,8 +115,10 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.nama,
-                    onValueChange = { viewModel.updateUiState(uiState.copy(nama = it)) },
-                    label = { Text("Nama Produk") },
+                    onValueChange = { viewModel.onNamaChange(it) }, // 👈 Panggil Fungsi Baru
+                    label = { Text("Nama Produk *") },
+                    isError = uiState.isNamaError, // 👈 Merah jika error
+                    supportingText = { if (uiState.isNamaError) Text("Wajib diisi", color = MaterialTheme.colorScheme.error) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -121,8 +126,10 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.variant,
-                    onValueChange = { viewModel.updateUiState(uiState.copy(variant = it)) },
-                    label = { Text("Varian (ml)") },
+                    onValueChange = { viewModel.onVariantChange(it) }, // 👈 Panggil Fungsi Baru
+                    label = { Text("Varian (ml) *") },
+                    isError = uiState.isVariantError,
+                    supportingText = { if (uiState.isVariantError) Text("Wajib angka", color = MaterialTheme.colorScheme.error) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -131,8 +138,10 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.price,
-                    onValueChange = { viewModel.updateUiState(uiState.copy(price = it)) },
-                    label = { Text("Harga (Rp)") },
+                    onValueChange = { viewModel.onPriceChange(it) }, // 👈 Panggil Fungsi Baru
+                    label = { Text("Harga (Rp) *") },
+                    isError = uiState.isPriceError,
+                    supportingText = { if (uiState.isPriceError) Text("Wajib angka", color = MaterialTheme.colorScheme.error) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -141,43 +150,75 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.currentStock,
-                    onValueChange = { viewModel.updateUiState(uiState.copy(currentStock = it)) },
-                    label = { Text("Stok Awal") },
+                    onValueChange = { viewModel.onStockChange(it) }, // 👈 Panggil Fungsi Baru
+                    label = { Text("Stok Awal *") },
+                    isError = uiState.isStockError,
+                    supportingText = { if (uiState.isStockError) Text("Wajib angka", color = MaterialTheme.colorScheme.error) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             item {
-                DynamicNotesInput(
-                    label = "Top Notes",
-                    currentValue = uiState.topNotes,
-                    onValueChange = { viewModel.updateUiState(uiState.copy(topNotes = it)) }
-                )
+                Column {
+                    DynamicNotesInput(
+                        label = "Top Notes *",
+                        currentValue = uiState.topNotes,
+                        onValueChange = { viewModel.onTopNotesChange(it) }
+                    )
+                    if (uiState.isTopNotesError) {
+                        Text(
+                            text = "Top Notes wajib diisi",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                        )
+                    }
+                }
+            }
+            item {
+                Column {
+                    DynamicNotesInput(
+                        label = "Middle Notes *",
+                        currentValue = uiState.middleNotes,
+                        onValueChange = { viewModel.onMidNotesChange(it) }
+                    )
+                    if (uiState.isMidNotesError) {
+                        Text(
+                            text = "Middle Notes wajib diisi",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                        )
+                    }
+                }
             }
 
             item {
-                DynamicNotesInput(
-                    label = "Middle Notes",
-                    currentValue = uiState.middleNotes,
-                    onValueChange = { viewModel.updateUiState(uiState.copy(middleNotes = it)) }
-                )
+                Column {
+                    DynamicNotesInput(
+                        label = "Base Notes *",
+                        currentValue = uiState.baseNotes,
+                        onValueChange = { viewModel.onBaseNotesChange(it) }
+                    )
+                    if (uiState.isBaseNotesError) {
+                        Text(
+                            text = "Base Notes wajib diisi",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                        )
+                    }
+                }
             }
-
-            item {
-                DynamicNotesInput(
-                    label = "Base Notes",
-                    currentValue = uiState.baseNotes,
-                    onValueChange = { viewModel.updateUiState(uiState.copy(baseNotes = it)) }
-                )
-            }
-
 
             item {
                 OutlinedTextField(
                     value = uiState.description,
-                    onValueChange = { viewModel.updateUiState(uiState.copy(description = it)) },
-                    label = { Text("Deskripsi") },
+                    onValueChange = { viewModel.onDescChange(it) }, // 👈 Panggil Fungsi Baru
+                    label = { Text("Deskripsi *") },
+                    isError = uiState.isDescError,
+                    supportingText = { if (uiState.isDescError) Text("Wajib diisi", color = MaterialTheme.colorScheme.error) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3
                 )
@@ -186,13 +227,18 @@ fun HalamanEntryProduct(
             item {
                 Button(
                     onClick = {
-                        viewModel.saveProduk(onSuccess = onNavigateBack)
+                        viewModel.saveProduk(context) { onNavigateBack() }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp) // Jarak dikit dari deskripsi
+                        .padding(top = 16.dp),
+                    enabled = !uiState.isLoading
                 ) {
-                    Text("Simpan Produk")
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    } else {
+                        Text("Simpan Produk")
+                    }
                 }
             }
 

@@ -1,15 +1,33 @@
 package com.example.scentra.uicontroller.view
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.example.scentra.modeldata.getFullImageUrl
 import com.example.scentra.uicontroller.view.widget.ScentraTopAppBar
 import com.example.scentra.uicontroller.viewmodel.provider.PenyediaViewModel
 import com.example.scentra.viewmodel.EditViewModel
@@ -23,6 +41,14 @@ fun HalamanEditProduct(
     viewModel: EditViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val uiState = viewModel.uiState
+    val context = LocalContext.current
+
+    // Launcher Galeri
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) viewModel.updateUiState(uiState.copy(imageUri = uri))
+    }
 
     LaunchedEffect(idProduk) {
         viewModel.loadProduk(idProduk)
@@ -39,23 +65,52 @@ fun HalamanEditProduct(
     ) { innerPadding ->
         LazyColumn(
             modifier = modifier
-                .fillMaxSize()
                 .padding(innerPadding)
-                .imePadding(),
+                .fillMaxSize()
+                .imePadding(), // Biar keyboard gak nutupin
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // --- ERROR MESSAGE ---
-            if (uiState.error != null) {
-                item {
-                    Text(
-                        text = uiState.error!!,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.LightGray.copy(alpha = 0.3f))
+                        .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
+                        .clickable {
+                            launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (uiState.imageUri != null) {
+                        AsyncImage(
+                            model = uiState.imageUri,
+                            contentDescription = "New Image",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        AsyncImage(
+                            model = getFullImageUrl(uiState.imgPath),
+                            contentDescription = "Old Image",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(12.dp)
+                            .background(Color.White.copy(alpha = 0.8f), shape = CircleShape)
+                            .padding(8.dp)
+                    ) {
+                        Icon(Icons.Default.Edit, contentDescription = "Ganti Foto", modifier = Modifier.size(20.dp))
+                    }
                 }
             }
-
 
             item {
                 OutlinedTextField(
@@ -86,6 +141,7 @@ fun HalamanEditProduct(
                 )
             }
 
+            // --- 5. STOK ---
             item {
                 OutlinedTextField(
                     value = uiState.currentStock,
@@ -96,7 +152,7 @@ fun HalamanEditProduct(
                 )
             }
 
-
+            // --- 6. NOTES PARFUM ---
             item {
                 DynamicNotesInput(
                     label = "Top Notes",
@@ -134,19 +190,15 @@ fun HalamanEditProduct(
             item {
                 Button(
                     onClick = {
-                        viewModel.updateProduk(idProduk, onSuccess = onNavigateBack)
+                        viewModel.updateProduk(idProduk, context) { onNavigateBack() }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
                 ) {
                     Text("Update Produk")
                 }
             }
 
-            item {
-                Spacer(modifier = Modifier.height(100.dp))
-            }
+            item { Spacer(modifier = Modifier.height(100.dp)) }
         }
     }
 }

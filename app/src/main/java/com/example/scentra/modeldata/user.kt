@@ -38,7 +38,8 @@ data class UserData(
     @SerialName("username") val username: String,
     val firstname: String,
     val lastname: String? = null,
-    val role: String
+    val role: String,
+    val password: String? = null
 )
 @Serializable
 data class UserResponse(

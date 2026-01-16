@@ -7,6 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,7 +21,13 @@ fun ScentraTopAppBar(
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(title) },
+        title = {
+            Text(
+                text = title,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        },
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         navigationIcon = {
@@ -33,9 +41,12 @@ fun ScentraTopAppBar(
             }
         },
         actions = actions,
+        // 👇 SETTING WARNA HITAM & PUTIH
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.White,
-            titleContentColor = Color.Black
+            containerColor = Color(0xFF1D1B20), // Background Hitam
+            titleContentColor = Color.White,    // Judul Putih
+            navigationIconContentColor = Color.White, // Panah Back Putih
+            actionIconContentColor = Color.White      // Icon Action (Edit/Delete) Putih
         )
     )
 }
