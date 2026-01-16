@@ -19,7 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.scentra.modeldata.CurrentUser // 👈 Pastikan Import ini ada
+import com.example.scentra.modeldata.CurrentUser
 import com.example.scentra.modeldata.Produk
 import com.example.scentra.uicontroller.viewmodel.DetailUiState
 import com.example.scentra.uicontroller.viewmodel.DetailViewModel
@@ -53,16 +53,13 @@ fun HalamanDetailProduct(
                     }
                 },
                 actions = {
-                    // 👇 SATPAMNYA DISINI!
-                    // Cuma ADMIN yang boleh lihat tombol Edit & Delete
+
                     if (CurrentUser.role == "Admin") {
 
-                        // Tombol Edit
                         IconButton(onClick = { onEditClick(idProduk) }) {
                             Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
                         }
 
-                        // Tombol Delete (Merah)
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
@@ -76,7 +73,6 @@ fun HalamanDetailProduct(
         }
     ) { innerPadding ->
 
-        // ... (Bagian Content ke bawah INI SAMA PERSIS, Gak ada yg berubah) ...
 
         when (val state = viewModel.detailUiState) {
             is DetailUiState.Loading -> {
@@ -150,7 +146,6 @@ fun HalamanDetailProduct(
     }
 }
 
-// ... Copy paste DetailContent, InfoRow, StockDialog yg tadi kalau belum ada ...
 @Composable
 fun DetailContent(
     produk: Produk,

@@ -115,9 +115,9 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.nama,
-                    onValueChange = { viewModel.onNamaChange(it) }, // 👈 Panggil Fungsi Baru
+                    onValueChange = { viewModel.onNamaChange(it) },
                     label = { Text("Nama Produk *") },
-                    isError = uiState.isNamaError, // 👈 Merah jika error
+                    isError = uiState.isNamaError,
                     supportingText = { if (uiState.isNamaError) Text("Wajib diisi", color = MaterialTheme.colorScheme.error) },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -126,7 +126,7 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.variant,
-                    onValueChange = { viewModel.onVariantChange(it) }, // 👈 Panggil Fungsi Baru
+                    onValueChange = { viewModel.onVariantChange(it) },
                     label = { Text("Varian (ml) *") },
                     isError = uiState.isVariantError,
                     supportingText = { if (uiState.isVariantError) Text("Wajib angka", color = MaterialTheme.colorScheme.error) },
@@ -138,7 +138,7 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.price,
-                    onValueChange = { viewModel.onPriceChange(it) }, // 👈 Panggil Fungsi Baru
+                    onValueChange = { viewModel.onPriceChange(it) },
                     label = { Text("Harga (Rp) *") },
                     isError = uiState.isPriceError,
                     supportingText = { if (uiState.isPriceError) Text("Wajib angka", color = MaterialTheme.colorScheme.error) },
@@ -150,7 +150,7 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.currentStock,
-                    onValueChange = { viewModel.onStockChange(it) }, // 👈 Panggil Fungsi Baru
+                    onValueChange = { viewModel.onStockChange(it) },
                     label = { Text("Stok Awal *") },
                     isError = uiState.isStockError,
                     supportingText = { if (uiState.isStockError) Text("Wajib angka", color = MaterialTheme.colorScheme.error) },
@@ -215,7 +215,7 @@ fun HalamanEntryProduct(
             item {
                 OutlinedTextField(
                     value = uiState.description,
-                    onValueChange = { viewModel.onDescChange(it) }, // 👈 Panggil Fungsi Baru
+                    onValueChange = { viewModel.onDescChange(it) },
                     label = { Text("Deskripsi *") },
                     isError = uiState.isDescError,
                     supportingText = { if (uiState.isDescError) Text("Wajib diisi", color = MaterialTheme.colorScheme.error) },

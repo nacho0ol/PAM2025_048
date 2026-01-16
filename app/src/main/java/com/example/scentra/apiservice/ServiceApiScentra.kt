@@ -68,9 +68,7 @@ interface ScentraApiService {
         @Part("middle_notes") middle: RequestBody,
         @Part("base_notes") base: RequestBody,
         @Part("description") desc: RequestBody,
-        // 👇 Kita kirim nama file lama sebagai teks backup
         @Part("img_path") oldImgPath: RequestBody,
-        // 👇 File baru (Boleh Null)
         @Part image: MultipartBody.Part?
     ): Response<BasicResponse>
 

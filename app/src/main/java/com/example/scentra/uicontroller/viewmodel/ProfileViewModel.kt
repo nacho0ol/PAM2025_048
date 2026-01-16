@@ -18,7 +18,6 @@ sealed interface ProfileUiState {
 
 class ProfileViewModel(private val repository: ScentraRepository) : ViewModel() {
 
-    // State UI
     var profileUiState: ProfileUiState by mutableStateOf(ProfileUiState.Loading)
         private set
 
@@ -28,7 +27,6 @@ class ProfileViewModel(private val repository: ScentraRepository) : ViewModel() 
         viewModelScope.launch {
             profileUiState = ProfileUiState.Loading
             try {
-                // Panggil repo
                 val listUsers = repository.getAllUsers()
                 profileUiState = ProfileUiState.Success(listUsers)
             } catch (e: Exception) {

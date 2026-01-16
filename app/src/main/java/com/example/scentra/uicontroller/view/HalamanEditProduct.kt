@@ -67,7 +67,7 @@ fun HalamanEditProduct(
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .imePadding(), // Biar keyboard gak nutupin
+                .imePadding(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
