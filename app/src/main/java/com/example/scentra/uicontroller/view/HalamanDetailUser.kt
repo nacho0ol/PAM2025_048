@@ -81,7 +81,7 @@ fun HalamanDetailUser(
                     modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxSize()
-                        .background(Color(0xFFFAFAFA)) // Background sedikit abu biar Card nonjol
+                        .background(Color(0xFFFAFAFA))
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

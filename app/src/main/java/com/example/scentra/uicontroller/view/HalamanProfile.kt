@@ -88,7 +88,7 @@ fun HalamanProfile(
 
 
             Image(
-                painter = painterResource(id = R.drawable.group_47897),
+                painter = painterResource(id = R.drawable.profileuser),
                 contentDescription = "Profile Pic",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

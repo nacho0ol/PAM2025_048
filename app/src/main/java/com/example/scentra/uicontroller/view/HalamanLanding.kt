@@ -40,7 +40,6 @@ fun HalamanLanding(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // 1. JUDUL "SCENTRA" (Atas)
         Text(
             text = "Scentra",
             fontSize = 40.sp,
@@ -49,7 +48,6 @@ fun HalamanLanding(
             modifier = Modifier.padding(top = 40.dp)
         )
 
-        // 2. LOGO / GAMBAR (Tengah)
         Box(contentAlignment = Alignment.Center) {
             Image(
                 painter = painterResource(id = R.drawable.group_47897),

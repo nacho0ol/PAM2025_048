@@ -1,35 +1,17 @@
 package com.example.scentra.uicontroller.view
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
@@ -37,84 +19,95 @@ import androidx.compose.ui.unit.dp
 fun DynamicNotesInput(
     label: String,
     currentValue: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onValueChange: (String) -> Unit
 ) {
-    var tempText by remember { mutableStateOf("") }
+    val notesList = remember(currentValue) {
+        if (currentValue.isBlank()) emptyList()
+        else currentValue.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    }
 
-    val notesList = if (currentValue.isBlank()) emptyList() else currentValue.split(",").map { it.trim() }
+    var textInput by remember { mutableStateOf("") }
 
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        FlowRow(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            notesList.forEach { note ->
-                if (note.isNotBlank()) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        if (notesList.isNotEmpty()) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(bottom = 8.dp)
+            ) {
+                notesList.forEach { note ->
                     InputChip(
                         selected = true,
-
-                        onClick = { },
-
+                        onClick = {
+                            val newList = notesList.toMutableList()
+                            newList.remove(note)
+                            onValueChange(newList.joinToString(", "))
+                        },
                         label = { Text(note) },
                         trailingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Hapus",
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .clickable {
-                                        val newList = notesList.filter { it != note }
-                                        onValueChange(newList.joinToString(", "))
-                                    }
+                                modifier = Modifier.size(16.dp)
                             )
                         },
                         colors = InputChipDefaults.inputChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            labelColor = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
+                            containerColor = Color(0xFF1D1B20),
+                            labelColor = Color.White,
+                            trailingIconColor = Color.White,
+
+                            selectedContainerColor = Color(0xFF1D1B20),
+                            selectedLabelColor = Color.White,
+                            selectedTrailingIconColor = Color.White
+                        ),
+                        border = null
                     )
                 }
             }
         }
 
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
-                value = tempText,
-                onValueChange = { tempText = it },
-                placeholder = { Text("Tambah $label...") },
+                value = textInput,
+                onValueChange = { textInput = it },
+                label = { Text("Tambah $label...") },
                 modifier = Modifier.weight(1f),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (textInput.isNotBlank()) {
+                            val newList = notesList.toMutableList()
+                            newList.add(textInput.trim())
+                            onValueChange(newList.joinToString(", "))
+                            textInput = ""
+                        }
+                    }
+                )
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            FilledIconButton(
+            IconButton(
                 onClick = {
-                    if (tempText.isNotBlank()) {
-                        val newString = if (currentValue.isBlank()) {
-                            tempText.trim()
-                        } else {
-                            "$currentValue, ${tempText.trim()}"
-                        }
-                        onValueChange(newString)
-                        tempText = ""
+                    if (textInput.isNotBlank()) {
+                        val newList = notesList.toMutableList()
+                        newList.add(textInput.trim())
+                        onValueChange(newList.joinToString(", "))
+                        textInput = ""
                     }
                 },
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.size(52.dp)
+                modifier = Modifier
+                    .size(50.dp)
+                    .padding(top = 6.dp),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = Color(0xFF1D1B20),
+                    contentColor = Color.White
+                )
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Tambah")
+                Icon(Icons.Default.Add, contentDescription = "Tambah")
             }
         }
     }
