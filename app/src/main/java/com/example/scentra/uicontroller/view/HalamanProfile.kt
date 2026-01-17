@@ -162,11 +162,11 @@ fun HalamanProfile(
 
                             }
 
-                            item {
+                            /*item {
                                 Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.CenterEnd) {
                                     Text("See more", color = Color.Gray, fontSize = 12.sp)
                                 }
-                            }
+                            }*/
                         }
                     }
                 }
